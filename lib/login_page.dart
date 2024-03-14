@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -67,7 +68,14 @@ class _LoginPageState extends State<LoginPage> {
           ),
           ElevatedButton(
             onPressed: () async{
-              UserCredential user=await FirebaseAuth.instance.signInAnonymously();
+              // UserCredential user=await FirebaseAuth.instance.signInAnonymously();
+              // print("user.user ===> ${user.user}");
+
+              //gradlew signingReport (to get  SHA-1 key and add this key to your firebase console)
+              //keytool -list -v -keystore "C:\Users\dhyey\.android\debug.keystore" -alias androiddebugkey -storepass android -keypass android
+
+              var google=await GoogleSignIn().signIn();
+              print("object $google");
             },
             child: Text("Login with Google"),
           )
