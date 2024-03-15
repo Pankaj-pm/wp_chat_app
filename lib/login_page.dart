@@ -10,9 +10,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
-  TextEditingController email=TextEditingController();
-  TextEditingController password=TextEditingController();
+  TextEditingController email = TextEditingController();
+  TextEditingController password = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -23,31 +22,28 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           TextFormField(
             controller: email,
-            decoration: InputDecoration(
-              hintText: "Email"
-            ),
+            decoration: InputDecoration(hintText: "Email"),
             keyboardType: TextInputType.emailAddress,
           ),
           TextFormField(
             controller: password,
-            decoration: InputDecoration(
-              hintText: "Password"
-            ),
+            decoration: InputDecoration(hintText: "Password"),
             obscureText: true,
             keyboardType: TextInputType.visiblePassword,
           ),
-          SizedBox(height: 10,),
+          SizedBox(
+            height: 10,
+          ),
           Row(
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () async{
-
-                    try{
-                      UserCredential user=await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.text, password: password.text);
+                  onPressed: () async {
+                    try {
+                      UserCredential user = await FirebaseAuth.instance
+                          .signInWithEmailAndPassword(email: email.text, password: password.text);
                       print("user Login==> ${user.user}");
-
-                    }on FirebaseAuthException catch (e){
+                    } on FirebaseAuthException catch (e) {
                       print(e.code);
                       print(e.message);
                     }
@@ -57,8 +53,9 @@ class _LoginPageState extends State<LoginPage> {
               ),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: ()  async{
-                    UserCredential user=await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email.text, password: password.text);
+                  onPressed: () async {
+                    UserCredential user = await FirebaseAuth.instance
+                        .createUserWithEmailAndPassword(email: email.text, password: password.text);
                     print("user==> ${user.user}");
                   },
                   child: Text("Register"),
@@ -67,15 +64,31 @@ class _LoginPageState extends State<LoginPage> {
             ],
           ),
           ElevatedButton(
-            onPressed: () async{
+            onPressed: () async {
               // UserCredential user=await FirebaseAuth.instance.signInAnonymously();
               // print("user.user ===> ${user.user}");
 
               //gradlew signingReport (to get  SHA-1 key and add this key to your firebase console)
-              //keytool -list -v -keystore "C:\Users\dhyey\.android\debug.keystore" -alias androiddebugkey -storepass android -keypass android
+              //keytool -list -v -keystore "/Users/rasher/.android/debug.keystore" -alias androiddebugkey -storepass android -keypass android
+              var cu = FirebaseAuth.instance.currentUser;
+              print(cu);
+              if (cu != null) {
+                print("Already Login");
+              } else {
+                var google = await GoogleSignIn().signIn();
+                var auth = await google?.authentication;
+                var credential = GoogleAuthProvider.credential(accessToken: auth?.accessToken, idToken: auth?.idToken);
+                var data = await FirebaseAuth.instance.signInWithCredential(credential);
+                print(data);
 
-              var google=await GoogleSignIn().signIn();
-              print("object $google");
+                print(google?.displayName);
+                print(google?.photoUrl);
+
+                // GoogleSignIn().signOut();
+                // FirebaseAuth.instance.signOut();
+
+                print("object $google");
+              }
             },
             child: Text("Login with Google"),
           )
