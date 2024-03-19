@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:wp_chat_app/fs_model.dart';
+import 'package:wp_chat_app/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -42,7 +45,12 @@ class _LoginPageState extends State<LoginPage> {
                     try {
                       UserCredential user = await FirebaseAuth.instance
                           .signInWithEmailAndPassword(email: email.text, password: password.text);
-                      print("user Login==> ${user.user}");
+                      FsModel().addUser(user.user);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomePage(),
+                          ));
                     } on FirebaseAuthException catch (e) {
                       print(e.code);
                       print(e.message);
@@ -56,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: () async {
                     UserCredential user = await FirebaseAuth.instance
                         .createUserWithEmailAndPassword(email: email.text, password: password.text);
-                    print("user==> ${user.user}");
+                    FsModel().addUser(user.user);
                   },
                   child: Text("Register"),
                 ),
@@ -80,12 +88,10 @@ class _LoginPageState extends State<LoginPage> {
                 var credential = GoogleAuthProvider.credential(accessToken: auth?.accessToken, idToken: auth?.idToken);
                 var data = await FirebaseAuth.instance.signInWithCredential(credential);
                 print(data);
+                FsModel().addUser(data.user);
 
                 print(google?.displayName);
                 print(google?.photoUrl);
-
-                // GoogleSignIn().signOut();
-                // FirebaseAuth.instance.signOut();
 
                 print("object $google");
               }
