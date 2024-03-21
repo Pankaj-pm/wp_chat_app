@@ -29,17 +29,18 @@ class FsModel {
     FirebaseFirestore.instance.collection("user").doc(user?.uid ?? "").set(authUser.toJson());
   }
 
-  void createChatRoom(String senderId, String receiverId) {
-    FirebaseFirestore.instance.collection("chat").doc("$senderId-$receiverId").set({});
-  }
 
-  void chat(String senderId, String receiverId, String senderEmail, String msg) {
+  void chat(String senderId, String receiverId, String senderEmail,String receiverEmail, String msg) {
     FirebaseFirestore.instance.collection("chat").doc("$senderId-$receiverId").set({
       "last_msg": msg,
-      "email": senderEmail,
+      "sender_email": senderEmail,
+      "email": receiverEmail,
+      "senderId": senderId,
+      "receiverId": receiverId,
     });
     FirebaseFirestore.instance.collection("chat").doc("$senderId-$receiverId").collection("messages").add(
           ChatModel(time: DateTime.now().toString(), senderId: senderId, senderEmail: senderEmail, msg: msg).toJson(),
         );
   }
 }
+

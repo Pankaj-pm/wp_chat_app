@@ -5,7 +5,9 @@ import 'package:wp_chat_app/fs_model.dart';
 
 class ChatController extends GetxController {
   String? id;
+  String? senderId;
   String? email;
+  String? chatRoomId;
 
   TextEditingController chatMsg = TextEditingController();
 
@@ -15,8 +17,9 @@ class ChatController extends GetxController {
     if (Get.arguments != null) {
       id = Get.arguments["id"];
       email = Get.arguments["email"];
+      chatRoomId = Get.arguments["roomId"];
     }
-    String sid = FirebaseAuth.instance.currentUser?.uid ?? "";
-    FsModel().createChatRoom(sid, id ?? "");
+    senderId= FirebaseAuth.instance.currentUser?.uid ?? "";
+    // chatRoomId="$senderId-$id";
   }
 }

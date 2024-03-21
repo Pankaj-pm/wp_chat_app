@@ -7,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:wp_chat_app/chat_page.dart';
 import 'package:wp_chat_app/login_page.dart';
 import 'package:wp_chat_app/model/auth_user.dart';
+import 'package:wp_chat_app/user_list_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -58,7 +59,7 @@ class _HomePageState extends State<HomePage> {
       ),
       appBar: AppBar(),
       body: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection("user").snapshots(),
+          stream: FirebaseFirestore.instance.collection("chat").snapshots(),
           builder: (context, snapshot) {
             var list = snapshot.data?.docs ?? [];
             return ListView.builder(
@@ -69,16 +70,23 @@ class _HomePageState extends State<HomePage> {
                 return ListTile(
                   onTap: () {
 
-                    Get.to(() => ChatPage(),arguments: {
-                      "id":item.id,
-                      "email":data["email"],
+                    Get.to(() => ChatPage(), arguments: {
+                      "id": data["receiverId"],
+                      "email": data["email"],
+                      "roomId": item.id,
                     });
                   },
                   title: Text("${data["email"]}"),
+                  subtitle: Text("${data["last_msg"]}"),
                 );
               },
             );
           }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Get.to(() => UserListPage());
+        },
+      ),
     );
   }
 }
