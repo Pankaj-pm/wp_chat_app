@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
@@ -7,7 +8,7 @@ class ChatController extends GetxController {
   String? id;
   String? senderId;
   String? email;
-  String? chatRoomId;
+  RxString chatRoomId="".obs;
 
   TextEditingController chatMsg = TextEditingController();
 
@@ -17,9 +18,17 @@ class ChatController extends GetxController {
     if (Get.arguments != null) {
       id = Get.arguments["id"];
       email = Get.arguments["email"];
-      chatRoomId = Get.arguments["roomId"];
+      chatRoomId.value = Get.arguments["roomId"];
     }
-    senderId= FirebaseAuth.instance.currentUser?.uid ?? "";
-    // chatRoomId="$senderId-$id";
+    senderId = FirebaseAuth.instance.currentUser?.uid ?? "";
+    if (chatRoomId.isEmpty ?? true) {
+      chatRoomId.value = "$senderId-$id";
+    }
+
+    FirebaseFirestore.instance.collection("chat").doc(chatRoomId.value).get().then((value) {
+      if (!value.exists) {
+        chatRoomId.value = "$id-$senderId";
+      }
+    });
   }
 }

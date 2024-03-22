@@ -30,15 +30,28 @@ class FsModel {
   }
 
 
-  void chat(String senderId, String receiverId, String senderEmail,String receiverEmail, String msg) {
-    FirebaseFirestore.instance.collection("chat").doc("$senderId-$receiverId").set({
+  void chat(String senderId, String receiverId, String senderEmail,String receiverEmail, String msg) async{
+
+
+    print("senderId $senderId");
+    print("receiverId $receiverId");
+    var doc = await  FirebaseFirestore.instance.collection("chat").doc("$senderId-$receiverId").get();
+
+    if(!doc.exists){
+      doc = await FirebaseFirestore.instance.collection("chat").doc("$receiverId-$senderId").get();
+    }
+
+    doc.reference.set({
       "last_msg": msg,
       "sender_email": senderEmail,
       "email": receiverEmail,
       "senderId": senderId,
       "receiverId": receiverId,
     });
-    FirebaseFirestore.instance.collection("chat").doc("$senderId-$receiverId").collection("messages").add(
+
+    print(doc.exists);
+
+    doc.reference.collection("messages").doc(DateTime.now().millisecondsSinceEpoch.toString()).set(
           ChatModel(time: DateTime.now().toString(), senderId: senderId, senderEmail: senderEmail, msg: msg).toJson(),
         );
   }

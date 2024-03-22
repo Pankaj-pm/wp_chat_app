@@ -69,10 +69,14 @@ class _HomePageState extends State<HomePage> {
                 var data = item.data() as Map<String, dynamic>;
                 return ListTile(
                   onTap: () {
+                    var uid = FirebaseAuth.instance.currentUser?.uid ?? "";
+
+                    String id = (uid == data["receiverId"]) ? data["senderId"] : data["receiverId"];
+                    String email = (uid == data["receiverId"]) ? data["sender_email"] : data["email"];
 
                     Get.to(() => ChatPage(), arguments: {
-                      "id": data["receiverId"],
-                      "email": data["email"],
+                      "id": id,
+                      "email": email,
                       "roomId": item.id,
                     });
                   },
