@@ -38,6 +38,7 @@ class _UserListPageState extends State<UserListPage> {
               itemBuilder: (context, index) {
                 var item = list[index];
                 var data = item.data() as Map<String, dynamic>;
+
                 return ListTile(
                   onTap: () {
                     Get.to(() => ChatPage(), arguments: {

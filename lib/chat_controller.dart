@@ -8,7 +8,7 @@ class ChatController extends GetxController {
   String? id;
   String? senderId;
   String? email;
-  RxString chatRoomId="".obs;
+  RxString chatRoomId = "".obs;
 
   TextEditingController chatMsg = TextEditingController();
 
@@ -18,17 +18,10 @@ class ChatController extends GetxController {
     if (Get.arguments != null) {
       id = Get.arguments["id"];
       email = Get.arguments["email"];
-      chatRoomId.value = Get.arguments["roomId"];
+
     }
     senderId = FirebaseAuth.instance.currentUser?.uid ?? "";
-    if (chatRoomId.isEmpty ?? true) {
-      chatRoomId.value = "$senderId-$id";
-    }
 
-    FirebaseFirestore.instance.collection("chat").doc(chatRoomId.value).get().then((value) {
-      if (!value.exists) {
-        chatRoomId.value = "$id-$senderId";
-      }
-    });
+    chatRoomId.value = "$senderId-$id";
   }
 }

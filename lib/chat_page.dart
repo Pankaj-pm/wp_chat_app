@@ -35,22 +35,38 @@ class ChatPage extends StatelessWidget {
                         itemCount: data.length,
                         itemBuilder: (context, index) {
                           var item = data[index].data() as Map<String, dynamic>;
+                          var isLoginUser = controller.senderId == item["sender_id"];
                           // var item = data[index].data();
-                          return ListTile(
-                            onTap: () async {
-                              // var future = await FirebaseFirestore.instance.collection(controller.chatRoomId??"").doc().get();
-                              var future = await FirebaseFirestore.instance
-                                  .collection("chat")
-                                  .doc(controller.chatRoomId.value)
-                                  .collection("messages")
-                                  .get();
-                              // var msg=await future.reference.collection("messages").get();
-                              print(controller.chatRoomId);
-                              // var future2 = future as Map<String,dynamic>;
-                              print(future.docs);
-                              // print(msg.docs);
-                            },
-                            title: Text(item["msg"]),
+                          return Align(
+                            alignment: isLoginUser?Alignment.centerRight:Alignment.centerLeft,
+                            child: Container(
+                              margin: EdgeInsets.all(10),
+                              padding: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    bottomLeft: Radius.circular(isLoginUser ? 20 : 0),
+                                    topRight: Radius.circular(20),
+                                    bottomRight: Radius.circular(isLoginUser ? 0 : 20),
+                                  )),
+                              child: InkWell(
+                                onTap: () async {
+                                  // var future = await FirebaseFirestore.instance.collection(controller.chatRoomId??"").doc().get();
+                                  var future = await FirebaseFirestore.instance
+                                      .collection("chat")
+                                      .doc(controller.chatRoomId.value)
+                                      .collection("messages")
+                                      .get();
+                                  // var msg=await future.reference.collection("messages").get();
+                                  print(controller.chatRoomId);
+                                  // var future2 = future as Map<String,dynamic>;
+                                  print(future.docs);
+                                  // print(msg.docs);
+                                },
+                                child: Text(item["msg"],style: TextStyle(color: Colors.white),),
+                              ),
+                            ),
                           );
                         },
                       );

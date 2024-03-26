@@ -29,19 +29,13 @@ class FsModel {
     FirebaseFirestore.instance.collection("user").doc(user?.uid ?? "").set(authUser.toJson());
   }
 
-
-  void chat(String senderId, String receiverId, String senderEmail,String receiverEmail, String msg) async{
-
-
+  void chat(String senderId, String receiverId, String senderEmail, String receiverEmail, String msg) async {
     print("senderId $senderId");
     print("receiverId $receiverId");
-    var doc = await  FirebaseFirestore.instance.collection("chat").doc("$senderId-$receiverId").get();
+    var doc1 = await FirebaseFirestore.instance.collection("chat").doc("$senderId-$receiverId").get();
+    var doc2 = await FirebaseFirestore.instance.collection("chat").doc("$receiverId-$senderId").get();
 
-    if(!doc.exists){
-      doc = await FirebaseFirestore.instance.collection("chat").doc("$receiverId-$senderId").get();
-    }
-
-    doc.reference.set({
+    doc1.reference.set({
       "last_msg": msg,
       "sender_email": senderEmail,
       "email": receiverEmail,
@@ -49,11 +43,29 @@ class FsModel {
       "receiverId": receiverId,
     });
 
-    print(doc.exists);
+    doc2.reference.set({
+      "last_msg": msg,
+      "sender_email": receiverEmail,
+      "email": senderEmail,
+      "senderId": receiverId,
+      "receiverId": senderId,
+    });
 
-    doc.reference.collection("messages").doc(DateTime.now().millisecondsSinceEpoch.toString()).set(
-          ChatModel(time: DateTime.now().toString(), senderId: senderId, senderEmail: senderEmail, msg: msg).toJson(),
+    doc1.reference.collection("messages").doc(DateTime.now().millisecondsSinceEpoch.toString()).set(
+          ChatModel(
+            time: DateTime.now().toString(),
+            senderId: senderId,
+            senderEmail: senderEmail,
+            msg: msg,
+          ).toJson(),
+        );
+    doc2.reference.collection("messages").doc(DateTime.now().millisecondsSinceEpoch.toString()).set(
+          ChatModel(
+            time: DateTime.now().toString(),
+            senderId: senderId,
+            senderEmail: senderEmail,
+            msg: msg,
+          ).toJson(),
         );
   }
 }
-
