@@ -9,6 +9,7 @@ import 'package:get/route_manager.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:wp_chat_app/chat_page.dart';
 import 'package:wp_chat_app/login_page.dart';
+import 'package:wp_chat_app/main.dart';
 import 'package:wp_chat_app/model/auth_user.dart';
 import 'package:wp_chat_app/user_list_page.dart';
 
@@ -81,7 +82,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           ],
         ),
       ),
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: [
+          IconButton(
+              onPressed: () {
+                showLocalNotification2();
+              },
+              icon: Icon(Icons.notification_add))
+        ],
+      ),
       body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection("chat")
@@ -115,7 +124,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.to(() => UserListPage());
+          showLocalNotification();
+          // Get.to(() => UserListPage());
         },
       ),
     );
