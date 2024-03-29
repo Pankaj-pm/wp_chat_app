@@ -17,6 +17,7 @@ class AuthUser {
   String? lastTime;
   String? img;
   bool? online;
+  String? fcmToken;
 
   AuthUser({
     this.name,
@@ -27,6 +28,7 @@ class AuthUser {
     this.lastTime,
     this.img,
     this.online,
+    this.fcmToken,
   });
 
   factory AuthUser.fromJson(Map<String, dynamic> json) => AuthUser(
@@ -38,6 +40,7 @@ class AuthUser {
     lastTime: json["last_time"],
     img: json["img"],
     online: json["online"],
+    fcmToken: json["fcmToken"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -49,5 +52,6 @@ class AuthUser {
     "last_time": lastTime,
     "img": img,
     "online": online,
+    "fcmToken": fcmToken,
   };
 }

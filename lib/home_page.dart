@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void initState() {
     FirebaseFirestore.instance.collection("user").get().then((value) {});
     WidgetsBinding.instance.addObserver(this);
+
+    FirebaseMessaging.onMessage.listen(
+      (event) {
+        showLocalNotification(event);
+        print("FirebaseMessaging.onMessage $event");
+      },
+    );
     super.initState();
   }
 
@@ -50,7 +58,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      endDrawer: SizedBox(
+      drawer: SizedBox(
         width: double.infinity,
         child: NavigationDrawer(
           children: [
@@ -86,6 +94,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         actions: [
           IconButton(
               onPressed: () {
+
                 showLocalNotification2();
               },
               icon: Icon(Icons.notification_add))
