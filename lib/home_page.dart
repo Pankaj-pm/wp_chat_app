@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:wp_chat_app/chat_page.dart';
 import 'package:wp_chat_app/login_page.dart';
 import 'package:wp_chat_app/main.dart';
@@ -23,6 +27,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   var cu = FirebaseAuth.instance.currentUser;
+  String? filePath;
 
   @override
   void initState() {
@@ -63,6 +68,36 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         child: NavigationDrawer(
           children: [
             UserAccountsDrawerHeader(
+              currentAccountPicture: InkWell(
+                onTap: () async {
+                  var pickImage = await ImagePicker().pickImage(source: ImageSource.camera);
+                  if (pickImage != null) {
+                    filePath = pickImage?.path ?? '';
+                    var readAsBytes = await pickImage.readAsBytes();
+                    var base64encode = base64Encode(readAsBytes);
+
+                    FirebaseFirestore.instance.collection("user").doc(cu?.uid ?? "").update({
+                      "img": base64encode,
+                    });
+                  }
+
+                  setState(() {});
+                },
+                child: StreamBuilder<DocumentSnapshot>(
+                  stream: FirebaseFirestore.instance.collection("user").doc(cu?.uid ?? "").snapshots(),
+                  builder: (context, snapshot) {
+                    String? img = (snapshot.data?.data() as Map<String,dynamic>?)?["img"];
+                    Uint8List? decodeimg;
+                    if(img!=null){
+                      decodeimg = base64Decode(img);
+                    }
+
+                    return CircleAvatar(
+                      backgroundImage: decodeimg != null ? MemoryImage(decodeimg) : null,
+                    );
+                  }
+                ),
+              ),
               accountName: Text(cu?.displayName ?? ""),
               accountEmail: Text(cu?.email ?? ""),
             ),
@@ -94,7 +129,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         actions: [
           IconButton(
               onPressed: () {
-
                 showLocalNotification2();
               },
               icon: Icon(Icons.notification_add))

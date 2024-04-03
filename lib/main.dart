@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -111,6 +113,7 @@ void showLocalNotification([RemoteMessage? remoteMessage]) async {
 
 
   var img = remoteMessage?.data["img"];
+  img ??="https://uploads-ssl.webflow.com/5f841209f4e71b2d70034471/60bb4a2e143f632da3e56aea_Flutter%20app%20development%20(2).png";
 
   final ByteArrayAndroidBitmap largeIcon =
       ByteArrayAndroidBitmap(await _getByteArrayFromUrl(img));
@@ -123,10 +126,8 @@ void showLocalNotification([RemoteMessage? remoteMessage]) async {
       android: AndroidNotificationDetails(channel.id, channel.name,
           priority: Priority.max,
           importance: Importance.max,
-          styleInformation: BigPictureStyleInformation(
-            largeIcon,
-            contentTitle: "Hello"
-          )),
+          largeIcon: largeIcon,
+          styleInformation: MediaStyleInformation()),
     ),
   );
 }
